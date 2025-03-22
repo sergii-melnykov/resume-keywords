@@ -70,6 +70,7 @@ export function WordEntriesTable({ text }: Props) {
   // Process the text to count word occurrences and find first occurrences
   const cleanText = removeTags(text); // Remove the <p> tags before processing
   const words = cleanText.split(/\s+/); // Split text into words by whitespace
+  const wordsCount = words.length;
   const wordMap = new Map<string, { count: number; firstIndex: number }>();
 
   // Regular expression to clean words
@@ -104,7 +105,7 @@ export function WordEntriesTable({ text }: Props) {
   return (
     <div className='grow'>
       <div className='flex justify-between items-end'>
-        <h2 className='font-bold text-xl'>Entries Table</h2>
+        <h2 className='font-bold text-xl'>Words Entries Table</h2>
         <Dropdown
           onChange={(value) => setEntries(+value)}
           value={entries.toString()}
@@ -117,6 +118,7 @@ export function WordEntriesTable({ text }: Props) {
             <tr>
               <th className='border border-gray-400 p-1'>Word</th>
               <th className='border border-gray-400 p-1'>Count</th>
+              <th className='border border-gray-400 p-1'>Frequency</th>
               <th className='border border-gray-400 p-1'>First Occurrence</th>
             </tr>
           </thead>
@@ -125,6 +127,9 @@ export function WordEntriesTable({ text }: Props) {
               <tr key={word}>
                 <td className='border border-gray-400 p-1'>{word}</td>
                 <td className='border border-gray-400 p-1'>{count}</td>
+                <td className='border border-gray-400 p-1'>
+                  {((count / wordsCount) * 100).toFixed(2)}%
+                </td>
                 <td className='border border-gray-400 p-1'>{firstIndex}</td>
               </tr>
             ))}

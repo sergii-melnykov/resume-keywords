@@ -51,7 +51,7 @@ export function PhraseEntriesTable({ text }: Props) {
   return (
     <div className='grow'>
       <div className='flex justify-between items-end'>
-        <h2 className='font-bold text-xl'>Entries Table</h2>
+        <h2 className='font-bold text-xl'>Phrases Entries Table</h2>
         <Dropdown
           onChange={(value) => setEntries(+value)}
           value={entries.toString()}

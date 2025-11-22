@@ -1,16 +1,20 @@
 'use client';
 
-type Props = {
-  setPdfFile: (data: File | null) => void;
-};
+import { useAppDispatch } from '@/store/hooks';
+import { setText } from '@/store/textSlice';
+import { parsePDF } from '@/utilities/parse-pdf';
 
-export function PdfParser({ setPdfFile }: Props) {
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+export function PdfParser() {
+  const dispatch = useAppDispatch();
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = event.target.files?.[0];
     if (file && file.type === 'application/pdf') {
-      setPdfFile(file);
+      const parsedPdf = await parsePDF(URL.createObjectURL(file));
+      dispatch(setText(parsedPdf.html));
     } else {
-      alert('Пожалуйста, загрузите PDF файл.');
+      alert('Please upload a PDF file.');
     }
   };
 

@@ -1,25 +1,28 @@
 'use client';
 import { Dropdown } from '@/components/dropdown';
+import { useAppSelector } from '@/store/hooks';
 import { useState } from 'react';
 
-type Props = {
-  text: string;
-};
-
-export function PhraseEntriesTable({ text }: Props) {
-  const [entries, setEntries] = useState(30);
+export function PhraseEntriesTable() {
+  const text = useAppSelector((state) => state.text.text);
+  const [entries, setEntries] = useState(50);
 
   if (!text) {
-    return <div>No PDF data available.</div>;
+    return null;
   }
 
-  // Remove <p>, </p>, and <br> tags from the text
-  const removeTags = (text: string) => {
-    return text.replace(/<p[^>]*>|<\/p>|<br[^>]*>/g, ' '); // Remove <p>, </p>, and <br> tags
+  // Remove <p>, </p>, <br> tags, and bullet punctuation from the text
+  const normalize = (text: string) => {
+    return text
+      .replace(
+        /<p[^>]*>|<\/p>|<br[^>]*>|<br\/[^>]*>|<strong[^>]*>|<\/strong>|<em[^>]*>|<\/em>|<h1[^>]*>|<\/h1>|<h2[^>]*>|<\/h2>|<h3[^>]*>|<\/h3>|<h4[^>]*>|<\/h4>|<h5[^>]*>|<\/h5>|<h6[^>]*>|<\/h6>|<li[^>]*>|<\/li>|<ul[^>]*>|<\/ul>|<ol[^>]*>|<\/ol>|<span[^>]*>|<\/span>/g,
+        ' ',
+      ) // Remove <p>, </p>, <br>, <br/>, <strong>, <em>, <h1>, <h2>, <h3>, <h4>, <h5>, <h6>, <li>, <ul>, <ol>, <span> tags
+      .replace(/[●:\-–→—]/g, ' '); // Remove bullets and punctuation
   };
 
   // Process the text to count word occurrences and find first occurrences
-  const cleanText = removeTags(text); // Remove the <p> tags before processing
+  const cleanText = normalize(text); // Remove unwanted tags/punctuation before processing
   const words = cleanText.split(/\s+/); // Split text into words by whitespace
 
   const phrases = new Map<string, { count: number; firstIndex: number }>();

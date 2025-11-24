@@ -5,8 +5,14 @@ import { setText } from '@/store/textSlice';
 import { useState } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css'; // For the editor styles
+import { twMerge } from 'tailwind-merge';
+import { PdfParser } from '../pdf-parser';
 
-export function PdfEditor() {
+type Props = {
+  className?: string;
+};
+
+export function TextEditor({ className }: Props) {
   const text = useAppSelector((state) => state.text.text);
   const dispatch = useAppDispatch();
   const [removeText, setRemoveText] = useState('');
@@ -16,10 +22,14 @@ export function PdfEditor() {
     setRemoveText('');
   };
 
+  const handleChange = (value: string) => {
+    dispatch(setText(value));
+  };
+
   return (
-    <div className='min-w-[50%]'>
-      <h2>Tools</h2>
-      <div className='flex gap-2 sticky top-[5rem] bg-gray-500 p-2 z-10'>
+    <div className={twMerge('min-w-[50%] flex flex-col gap-2', className)}>
+      <PdfParser />
+      <div className='flex gap-2 sticky top-0 bg-gray-500 p-2 z-10'>
         <input
           className='border border-gray-300 rounded-md p-2 min-w-[500px]'
           type='text'
@@ -29,8 +39,7 @@ export function PdfEditor() {
         />
         <button onClick={handleRemoveText}>Remove</button>
       </div>
-      <h2 className='font-bold text-xl'>Edit that to improve</h2>
-      <ReactQuill value={text} onChange={setText} theme='snow' />
+      <ReactQuill value={text} onChange={handleChange} theme='snow' />
     </div>
   );
 }

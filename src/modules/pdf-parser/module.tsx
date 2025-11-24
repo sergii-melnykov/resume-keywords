@@ -3,8 +3,13 @@
 import { useAppDispatch } from '@/store/hooks';
 import { setText } from '@/store/textSlice';
 import { parsePDF } from '@/utilities/parse-pdf';
+import { twMerge } from 'tailwind-merge';
 
-export function PdfParser() {
+type Props = {
+  className?: string;
+};
+
+export function PdfParser({ className }: Props) {
   const dispatch = useAppDispatch();
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -19,9 +24,9 @@ export function PdfParser() {
   };
 
   return (
-    <div className='flex flex gap-2 items-center'>
+    <div className={twMerge('flex flex gap-2 items-center w-1/2', className)}>
       <label className='w-full text-sm font-medium text-gray-700'>
-        Upload a PDF File:
+        Upload resume (pdf):
       </label>
       <input
         type='file'

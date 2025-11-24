@@ -1,9 +1,15 @@
 'use client';
 import { Dropdown } from '@/components/dropdown';
 import { useAppSelector } from '@/store/hooks';
+import { cleanWords, filterTags } from '@/utilities';
 import { useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
-export function PhraseEntriesTable() {
+type Props = {
+  className?: string;
+};
+
+export function PhraseEntriesTable({ className }: Props) {
   const text = useAppSelector((state) => state.text.text);
   const [entries, setEntries] = useState(50);
 
@@ -11,19 +17,9 @@ export function PhraseEntriesTable() {
     return null;
   }
 
-  // Remove <p>, </p>, <br> tags, and bullet punctuation from the text
-  const normalize = (text: string) => {
-    return text
-      .replace(
-        /<p[^>]*>|<\/p>|<br[^>]*>|<br\/[^>]*>|<strong[^>]*>|<\/strong>|<em[^>]*>|<\/em>|<h1[^>]*>|<\/h1>|<h2[^>]*>|<\/h2>|<h3[^>]*>|<\/h3>|<h4[^>]*>|<\/h4>|<h5[^>]*>|<\/h5>|<h6[^>]*>|<\/h6>|<li[^>]*>|<\/li>|<ul[^>]*>|<\/ul>|<ol[^>]*>|<\/ol>|<span[^>]*>|<\/span>/g,
-        ' ',
-      ) // Remove <p>, </p>, <br>, <br/>, <strong>, <em>, <h1>, <h2>, <h3>, <h4>, <h5>, <h6>, <li>, <ul>, <ol>, <span> tags
-      .replace(/[●:\-–→—]/g, ' '); // Remove bullets and punctuation
-  };
-
   // Process the text to count word occurrences and find first occurrences
-  const cleanText = normalize(text); // Remove unwanted tags/punctuation before processing
-  const words = cleanText.split(/\s+/); // Split text into words by whitespace
+  const cleanText = filterTags(text).replace(/[●:\-–→]/g, ' '); // Remove bullets and punctuation; // Remove unwanted tags/punctuation before processing
+  const words = cleanWords(cleanText.split(/\s+/)); // Split text into words by whitespace
 
   const phrases = new Map<string, { count: number; firstIndex: number }>();
 
@@ -52,7 +48,7 @@ export function PhraseEntriesTable() {
     .slice(0, entries);
 
   return (
-    <div className='grow'>
+    <div className={twMerge('grow', className)}>
       <div className='flex justify-between items-end'>
         <h2 className='font-bold text-xl'>Phrases Entries Table</h2>
         <Dropdown

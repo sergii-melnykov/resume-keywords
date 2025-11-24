@@ -1,9 +1,15 @@
 'use client';
 import { Dropdown } from '@/components/dropdown';
 import { useAppSelector } from '@/store/hooks';
+import { cleanWords, filterTags } from '@/utilities';
 import { useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
-export function WordEntriesTable() {
+type Props = {
+  className?: string;
+};
+
+export function WordEntriesTable({ className }: Props) {
   const text = useAppSelector((state) => state.text.text);
   const [entries, setEntries] = useState(50);
   if (!text) {
@@ -60,16 +66,8 @@ export function WordEntriesTable() {
     'amp',
   ]);
 
-  // Remove <p>, </p>, <br>, <br/>, <strong>, <em>, <h1>, <h2>, <h3>, <h4>, <h5>, <h6> tags from the text
-  const removeTags = (text: string) => {
-    return text.replace(
-      /<p[^>]*>|<\/p>|<br[^>]*>|<br\/[^>]*>|<strong[^>]*>|<\/strong>|<em[^>]*>|<\/em>|<h1[^>]*>|<\/h1>|<h2[^>]*>|<\/h2>|<h3[^>]*>|<\/h3>|<h4[^>]*>|<\/h4>|<h5[^>]*>|<\/h5>|<h6[^>]*>|<\/h6>|<li[^>]*>|<\/li>|<ul[^>]*>|<\/ul>|<ol[^>]*>|<\/ol>|<span[^>]*>|<\/span>/g,
-      ' ',
-    ); // Remove <p>, </p>, and <br>, <br/>, <strong>, <em>, <h1>, <h2>, <h3>, <h4>, <h5>, <h6>, <li>, <ul>, <ol>, <span> tags
-  };
-  // Process the text to count word occurrences and find first occurrences
-  const cleanText = removeTags(text); // Remove the unwanted tags before processing
-  const words = cleanText.split(/\s+/); // Split text into words by whitespace
+  const cleanText = filterTags(text);
+  const words = cleanWords(cleanText.split(/\s+/)); // Split text into words by whitespace
   const wordsCount = words.length;
   const wordMap = new Map<string, { count: number; firstIndex: number }>();
 
@@ -103,7 +101,7 @@ export function WordEntriesTable() {
     .slice(0, entries); // Take only the first 25 entries
 
   return (
-    <div className='grow'>
+    <div className={twMerge('grow', className)}>
       <div className='flex justify-between items-end'>
         <h2 className='font-bold text-xl'>Words Entries Table</h2>
         <Dropdown

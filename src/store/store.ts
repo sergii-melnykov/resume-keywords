@@ -1,4 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import {
   persistStore,
   persistReducer,
@@ -11,19 +11,23 @@ import {
 } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import textReducer from './textSlice';
+import keywordsReducer from './keywordsSlice';
+
+const rootReducer = combineReducers({
+  text: textReducer,
+  keywords: keywordsReducer,
+});
 
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['text'], // Only persist the text slice
+  whitelist: ['text', 'keywords'], // Persist both text and keywords slices
 };
 
-const persistedReducer = persistReducer(persistConfig, textReducer);
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
-  reducer: {
-    text: persistedReducer,
-  },
+  reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
